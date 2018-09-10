@@ -9,6 +9,7 @@
 namespace App\Api2\Service;
 
 use Exception;
+use ArrayObject;
 use InfluxDB\Client;
 use InfluxDB\Database;
 use InfluxDB\Database\RetentionPolicy;
@@ -83,7 +84,7 @@ class AsnService {
         $rows = $data_point->getPoints();
 
         $result['total'] = $total;
-        $result['data'] = $this->parse_and_build_data($rows);
+        $result['data'] = $this->pb_data($rows);
       }
 
     }catch (Exception $e) {
@@ -97,6 +98,13 @@ class AsnService {
     return $result;
   }
 
+  /**
+   * Return all asns rows (nonexpanded data (ids only)) from InfluxDB.
+   *
+   * @param $offset - Offset for ISQL SELECT query.
+   * @param $limit - Limit for ISQL SELECT query.
+   * @return array
+   */
   public function get_all_ids_only($offset, $limit) {
     $result = [
       'type' => self::MEASUREMENT,
@@ -170,7 +178,7 @@ class AsnService {
       if($data_point){
         $rows = $data_point->getPoints();
         if(count($rows) > 0){
-          $result['data'] = $this->parse_and_build_data($rows)[0];
+          $result['data'] = $this->pb_data($rows)[0];
           $result['total'] = 1;
         }
       }
@@ -186,6 +194,12 @@ class AsnService {
     return $result;
   }
 
+  /**
+   * Return one asn detalied from InfluxDB.
+   *
+   * @param $id     - Asn id.
+   * @return array
+   */
   public function get_asn_by_id_verbose($id){
     $result = [
       'type' => self::MEASUREMENT,
@@ -210,7 +224,7 @@ class AsnService {
       if($data_point){
         $rows = $data_point->getPoints();
         if(count($rows) > 0){
-          $result['data'] = $this->parse_and_build_data($rows)[0];
+          $result['data'] = $this->pb_data($rows)[0];
           $result['total'] = 1;
         }
       }
@@ -227,6 +241,13 @@ class AsnService {
 
   }
 
+  /**
+   * Return asns (one or more) filtered by some name.
+   *
+   * @param $offset - Offset for ISQL SELECT query.
+   * @param $limit - Limit for ISQL SELECT query.
+   * @return array
+   */
   public function get_asn_by_name($name, $offset, $limit){
     $result = [
       'type' => self::MEASUREMENT,
@@ -237,10 +258,13 @@ class AsnService {
 
     try{
       if(!is_null($name)){
+
         $database = $this->getDatabase();
+
+        $fq = $this->build_query_by_name($name);
         $query = sprintf(
-          'SELECT * FROM "%s" WHERE "asn_name" =~ /(?i)^%s*/ LIMIT %s OFFSET %s',
-          self::MEASUREMENT, $name, $limit, $offset
+          'SELECT * FROM "%s" WHERE %s LIMIT %s OFFSET %s',
+          self::MEASUREMENT, $fq, $limit, $offset
         );
         $data_point = $database->query($query);
         if($data_point){
@@ -259,12 +283,49 @@ class AsnService {
   }
 
   /**
+   * Return list of ASNs that have a rank (customer cone is defined)
+   *
+   * @param $offset - Offset for ISQL SELECT query.
+   * @param $limit - Limit for ISQL SELECT query.
+   * @return array
+   */
+  public function get_asn_ranked($offset, $limit){
+    $result = [
+      'type' => self::MEASUREMENT,
+      'total' => 0,
+      'data'  => [],
+      'status' => 'success'
+    ];
+
+    try{
+      $database = $this->getDatabase();
+      $query = sprintf(
+        'SELECT * FROM %s WHERE rank >= 0 AND customer_cone_asnes >= 0 LIMIT %s OFFSET %s;',
+        self::MEASUREMENT, $limit, $offset
+      );
+      $data_point = $database->query($query);
+      if($data_point){
+        $rows = $data_point->getPoints();
+        $cnt = count($rows);
+        if($cnt > 0){
+          $result['data'] = $this->pb_ranked($rows);
+          $result['total'] = $cnt;
+        }
+      }
+    }catch (Exception $e){
+      $this->logger->error($e->getMessage());
+    }
+
+    return $result;
+  }
+
+  /**
    * Parse and restructure dasns fields (verbose mode).
    *
    * @param $rows   - Array of dataset records
    * @return array  - Array of restructured dataset rows
    */
-  private function parse_and_build_data($rows): array{
+  private function pb_data($rows): array{
     $result = [];
     if($rows != null && is_array($rows)) {
       foreach($rows as $row){
@@ -298,6 +359,12 @@ class AsnService {
     return $result;
   }
 
+  /**
+   * Buiild asn query string based on name param/s.
+   *
+   * @param $rows
+   * @return array
+   */
   private function pb_asn_by_name($rows): array{
     $result = [];
     if($rows != null && is_array($rows)) {
@@ -307,6 +374,41 @@ class AsnService {
         $el['name'] = array_key_exists('asn_name', $row) ? $row['asn_name'] : "";
         $result[] = $el;
       }
+    }
+    return $result;
+  }
+
+  /**
+   * Buiild asn ranked with rank field present only.
+   *
+   * @param $rows
+   * @return array
+   */
+  private function pb_ranked($rows){
+    $result = [];
+    if($rows != null && is_array($rows)) {
+      foreach ($rows as $row) {
+        $result[] = array_key_exists('rank', $row) ? $row['rank'] : "";
+      }
+    }
+    return $result;
+  }
+
+  /**
+   * Buiild asn query string based on name param/s.
+   *
+   * @param $name     - String of names backspace separated.
+   * @return array
+   */
+  private function build_query_by_name($name){
+    $result = sprintf('"asn_name" =~ /(?i)^%s*/', $name);
+    $words = explode(" ", $name);
+    if(count($words) > 1){
+      $wl = [];
+      foreach ($words as $word){
+        $wl[] = sprintf('%s', $word);
+      }
+      $result = sprintf('"asn_name" =~ /(?i)^*%s*/', join('', $wl));
     }
     return $result;
   }
