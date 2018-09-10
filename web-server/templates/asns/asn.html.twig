@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title%}{{parent()}}: AS{{asn_info.asn}} {% if asn_info.get_name() %} ({{asn_info.get_name()}}) {% endif %}
+{%endblock%}
+{% block description %}AS Rank:{{asn_info.rank}} Customer Cone:{{asn_info.cone.asns}} Transit Degree:{{asn_info.degree.transits}}{%endblock%}
+{% block jsonld %}<script type="application/ld+json"> {{asn_info.get_json_ld|raw}}</script> {% endblock %}
+
+
+
+{% block body %}
+    {%set name=asn_info.asn%} {% include 'asns/asn_search_form.html.twig' %}
+
+     <div class="row">
+        {% include 'as-core.html.twig' %}
+        {% include 'asns/asn-information-table.html.twig' %}
+    </div>
+    {% if location.area == "as-core" %}
+        {% set as_core_size="700" %}
+        {% include 'as-core.html.twig' %}
+    {% elseif location.area == "neighbors" %}
+        <div class="asrank-asn-neighbors-div" id="asn_neighbors_table"> </div>
+    {% endif %}
+{% endblock %}
+
+{% block datasources %} {% include 'data-sources.html.twig' %} {% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        {% if location.area == "as-core" %}
+        {% elseif location.area == "neighbors" %}
+            build_info_table('{{"asn_neighbors"}}','{{asn_info.asn}}',{{page}},{{page_size}},'{{sort_type}}', '{{sort_dir}}', '{{asn_info.get_json_ld()}}');
+        {% endif %}
+    </script>
+{% endblock %}
+

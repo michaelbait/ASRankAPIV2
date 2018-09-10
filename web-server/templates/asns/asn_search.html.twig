@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{parent()}}:ASN searching for {% if name %} "{{name}}"  {%endif%}
+{% endblock %}
+{% block jsonld %}<script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "http://as-rank.caida.org/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "http://as-rank.caida.org/asns/{asn}",
+            "query-input": "required name=asn"
+            }
+    }
+</script>{% endblock %}
+
+
+{% block body %}
+    {% include 'asns/asn_search_form_double.html.twig' %}
+    <div class="asrank-asn-search-div" id="asn_search_table"> </div>
+</div>
+{% endblock %}
+
+{% block datasources %} {% include 'data-sources.html.twig' %} {% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+    {% if name %}
+        build_info_table('{{"asn_search"}}','{{name}}',{{page}},{{page_size}},'{{false}}', '{{false}}');
+    {%endif%}
+    </script>
+{% endblock %}

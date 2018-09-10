@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}}: FAQ {% endblock %}
+{% block description %} AS Rank Frequency Asked Questions {% endblock %}
+
+{% block body %}
+    <div class="asrank-faq-title">Frequency Asked Questions</div>
+
+		<div><ol>
+			<li class="asrank-faq-question">How is AS Rank Calculated?
+					<div class="asrank-faq-answer">The AS rank equals the number of ASes in its customer cone or the number of ASes observed in downstream customer paths from the AS as seen in Route Views or RIPE RIS BGP monitors. For more information see the <a href="/about">about</a>.</div>
+			<li class="asrank-faq-question">Can I use this to calculate the geographic distribution of address space?
+          <div class="asrank-faq-answer">No, because prefixes can overlap geographic regions and can map to multiple countries. Also, AS Rank data is not organized by prefix in a way that allows one to simply add them up. To approach this question, we recommend that you start with <a href="https://dev.maxmind.com/geoip/legacy/geolite/">MaxMind GeoLite</a>. Though not perfect, we believe it to be the best free source for geolocated IP blocks. You can then use the <a href="http://www.caida.org/data/as-organizations/">CAIDA AS Organizations dataset</a> to map all the ASes to a country.</p>
+          <p>Keeping in mind that large ASes often have presence in multiple countries, and so their address space is located across those countries as well.</p></div></li>
+		</ol></div>
+
+{% endblock %}

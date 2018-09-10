@@ -1,0 +1,16 @@
+    <form id="searchNameForm" action="{{path('asn_search',{"asn":NULL})}}">
+        <div class="asrank-asn-search-form-div input-group">
+            <label for="asn_search_name">name:</label>
+            <input type="text" class="form-control" value="{{name}}" name="name" id="searchName"
+            placeholder="Search by Name">
+            <button id="searchNameButton" type="search" name="type" value="search" class="btn btn-primary" style="margin-left:.2em;">search</button>
+        </div>
+    </form>
+    <form id="searchNumberForm" action="{{path('asn_search',{"asn":NULL})}}">
+        <div class="asrank-asn-search-form-div input-group form-group" style="margin-top:0em !important;">
+            <label for="asn_search_number">number:</label>
+            <input type="text" class="form-control" value="{{name}}" name="name" id="searchNumber"
+            placeholder="Search by Number">
+            <button id="gotoNumber" type="search" name="type" value="go to" class="btn btn-primary" style="margin-left:.2em;">go to</button>
+        </div>
+    </form>

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}: A ranking of the largest Autonomous Systems (AS) in the Internet.{% endblock %}
+
+{% block body %} 
+    {% if top_ten == true %}
+        <div class="row">
+            <div class="col-sm-12" style="margin-top:1em;">
+                <img class="as-core-small" src='images/as-core.png'/>
+                <img src="{{asset('images/asrank-logo-letters.svg')}}" class="img-fluid asrank-asrank-logo-small">
+                <img src="{{asset('images/asrank-logo-ank.svg')}}" class="img-fluid asrank-asrank-logo-small" style="margin-left:-2px">
+                is CAIDA's ranking of
+                <a href="http://en.wikipedia.org/wiki/Autonomous_system_%28Internet%29">
+                Autonomous Systems (AS)</a> (which approximately map to Internet Service
+                Providers) and organizations (Orgs) (which are a collection of one or more ASes).
+                This ranking is derived from topological data collected by
+                CAIDA's <a href="http://www.caida.org/projects/ark/">  Archipelago
+                Measurement Infrastructure </a> and
+                <a href="http://en.wikipedia.org/wiki/Border_Gateway_Protocol"> Border Gateway
+                Protocol (BGP)</a> routing data collected by the
+                <a href="http://www.routeviews.org/">Route Views Project</a>
+                and <a href="http://www.ripe.net/">RIPE NCC</a>.
+                </p>
+
+                <p>ASes and Orgs are ranked by their
+                <a href="http://as-rank.caida.org/?mode0=as-intro#customer-cone">customer cone size</a>,
+                which is the number of their direct and indirect customers.
+                Note:  We do <i>not</i> have data to rank ASes (ISPs) by traffic,
+                revenue, users, or any other non-topological metric.
+                </p>
+                {%set name=""%} {% include 'asns/asn_search_form.html.twig' %}
+            </div>
+        </div>
+    {% else %}
+        {%set name=""%} {% include 'asns/asn_search_form.html.twig' %}
+    {% endif %}
+    <div id="asns_table"> 
+    </div>
+{% endblock %}
+
+{% block datasources %} {% include 'data-sources.html.twig' %} {% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script> 
+        {% if top_ten == true %} 
+            {% set table = 'asns_top_ten' %}
+        {% else  %}
+            {% set table = 'asns' %}
+        {% endif %}
+        build_info_table('{{table}}','{{false}}',{{page}},{{page_size}},'{{sort_type}}', '{{sort_dir}}', '{{false}}');
+    </script>
+{% endblock %}

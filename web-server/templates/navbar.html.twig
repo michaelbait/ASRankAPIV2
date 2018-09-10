@@ -1,0 +1,63 @@
+<div id="navbar" class="container asrank-navbar-container">
+    <nav class="navbar navbar-expand navbar-light justify-content-front asrank-navbar">
+        {% include 'navbar-logo.html.twig' %}
+        <div>
+        <div class="collapse navbar-collapse justify-content-front" id="navbarToggler">
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" id="navAbout" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+                <div class="dropdown-menu" aria-labelledby="navAbout">
+                    <a class="dropdown-item" href="{{path('faq')}}">FAQ</a>
+                    <a class="nav-link" href="{{path('about')}}">&nbsp;&nbsp;&nbsp;Background</a>
+                    <ul>
+                        <a href="{{path('about')}}#rank">- AS Ranking</a><br>
+                        <a href="{{path('about')}}#citation">- Citation</a>
+                    </ul>
+                </div>
+              </li>
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" id="navRanking" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ranking</a>
+                <div class="dropdown-menu" aria-labelledby="navRanking">
+                    <a class="dropdown-item" href="{{path('asns_ranking')}}">AS Ranking</a>
+                    <a class="dropdown-item" href="{{path('orgs_ranking')}}">Org Ranking</a>
+                </div>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{path('asn_neighbors')}}/">Search</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="{{path('contact')}}">Contact</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" id="navData" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Data </a>
+                <div class="dropdown-menu" aria-labelledby="navData">
+                    <div style="text-align:center;font-size:80%;font-color:grey;">(external links)</div>
+                    <a class="dropdown-item" href="http://www.caida.org/data/as-relationships/">AS Relationship</a>
+                    <a class="dropdown-item" href="http://www.caida.org/data/as-organizations/">AS Organization</a>
+                  <a class="dropdown-item" href="{{RESTFUL_DATABASE_URL}}">Data API</a>
+                </div>
+              </li>
+            </ul>
+        </div>
+        {% if location is defined %}
+            <div style="
+                position:absolute;
+                left:130px;
+                top:33px;
+                z-index:1;
+                color:grey;
+                font-size:80%
+                " class="navbar-nav">
+                    <div style="color:black;baseline:10px;margin-top:8px;">{{location.name|raw}}:</div>
+                    <a href="#" class="nav-link dropdown-toggle" id="navLocation" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" >{{location.area|raw}}<a>
+                    <div class="dropdown-menu" aria-labelledby="navLocation"
+                        style="line-height:10px;font-size:80%;padding:0;left:-4em;top:2.5em;position:relative;">
+                        {% for area in location.areas %}
+                            <a class="dropdown-item" href="{{area.url|raw}}">{{area.label|raw}}</a>
+                        {% endfor %}
+                    </div>
+            </div>
+        {% endif %}
+    </nav>
+</div>

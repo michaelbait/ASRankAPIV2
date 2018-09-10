@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /api/*
+Sitemap: http://as-rank.caida.org/sitemap

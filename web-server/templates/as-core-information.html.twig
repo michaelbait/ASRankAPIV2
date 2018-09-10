@@ -1,0 +1,110 @@
+<p> This is a representation of an
+{% if location.type == "org" %}
+    organization, it's members, 
+    and their 
+{% else %}
+    an AS and it's
+{% endif %}
+neighbors. It AS 
+is placed based on the size of
+it's customer cone and it's place in the world.
+The selected 
+{% if location.type == "org" %}
+    organization's ASes  are
+{% else %}
+    AS  is
+{% endif %}
+colored white and all other ASes are colored
+based on the size of their customer cone.
+</p>
+<p>
+</p><center>
+<svg width="200" height="200" style="border-style:none;border-width:2px">
+    <rect x="0" y="0" width="200" height="200" fill="white"></rect>
+
+    <rect x="138" y="142" width="5" height="5" fill="white" stroke="black" stroke-width="1"></rect>
+
+    <circle cx="90" cy="95" r="2" stroke="none" fill="black"></circle>
+    <line x1="95" y1="100" x2="135" y2="140" stroke="black"></line>
+    <line x1="135" y1="140" x2="135" y2="135" stroke="black"></line>
+    <line x1="135" y1="140" x2="130" y2="140" stroke="black"></line>
+    <g transform="translate(70,130)">
+	<text x="1" y="8" font-size="8" style="text-anchor:end">
+		1-log<tspan font-size="12">(</tspan></text>
+	<text x="22" y="3" font-size="8" style="text-anchor:middle">cone size</text>
+	<line x1="3" y1="5" x2="45" y2="5" stroke="black"></line>
+	<text x="22" y="12" font-size="8" style="text-anchor:middle">max size</text>
+	<text x="48" y="8" font-size="12" style="text-anchor:end">)</text>
+	
+cone/max.cone)
+    </g>
+
+    <line x1="95" y1="95" x2="160" y2="95" stroke-dasharray="5,5" style="stroke:black;fill:none;stroke-width:1;"></line>
+    <path d=" M160,100 A45,55 0 0,1 145,140" style="stroke:black;fill:none;stroke-width:1"></path>
+    <line x1="145" y1="140" x2="142" y2="134" style="stroke:black;fill:none;stroke-width:1"></line>
+    <line x1="145" y1="140" x2="152" y2="139" style="stroke:black;fill:none;stroke-width:1"></line>
+    <text x="160" y="130" font-size="8" style="text-anchor:front">longitude</text>
+
+<g id="Continents" transform="scale(.08,.08),translate(-50,0)">
+    <path d=" M133,1368 A1044,1044 0 0,0 1726,2029" style="stroke:pink;fill:none;stroke-width:30"></path>
+    <path d=" M1276,2242 A1094,1094 0 0,0 2034,1807" style="stroke:lightgreen;fill:none;stroke-width:30"></path>
+    <path d=" M2184,1334 A1044,1044 0 0,0 2024,576" style="stroke:lightblue;fill:none;stroke-width:30"></path>
+    <path d=" M2205,1463 A1094,1094 0 0,0 1838,301" style="stroke:LightCoral;fill:none;stroke-width:30"></path>
+    <path d=" M2024,576 A1044,1044 0 0,0 111,1153" style="stroke:gainsboro;fill:none;stroke-width:30"></path>
+    <path d=" M1074,64 A1094,1094 0 0,0 61,1153" style="stroke:moccasin;fill:none;stroke-width:30"></path>
+</g>
+</svg><br>
+</center>
+We place ASes based on the
+number of ASes in their customer cone and their longitude.
+<p></p>
+
+<center>
+<svg width="300" height="27" style="border-style:none;border-width:2px">
+    <text x="2" y="20" font-size="12">
+        <tspan font-weight="bold">AS's radius</tspan>
+        = 1 - log
+        <tspan font-size="22">(</tspan>
+    </text>
+  <g transform="translate(30,0)">
+    <line x1="95" y1="14" x2="260" y2="14" stroke="black" stroke-width="2"></line>
+    <text x="180" y="10" font-size="10" style="text-anchor:middle">
+        number of ASes in cone + 1</text>
+    <text x="180" y="25" font-size="10" style="text-anchor:middle">
+        max. number of ASes in cone + 1</text>
+    <text x="260" y="20" font-size="22">)</text>
+  </g>
+</svg>
+</center>
+<p></p>
+<p>
+We set the distance from the center of the plot by the size (number
+of ASes) of each neighbor's customer cone.  The larger the customer
+cone, the nearer the AS comes to the center of the plot.
+</p>
+
+<p>
+</p><center>
+<svg width="215" height="27" style="border-style:none;border-width:2px">
+    <text x="2" y="20" font-size="12">
+        <tspan font-weight="bold">AS's angle</tspan>
+        =
+        <tspan font-size="22">(</tspan></text>
+    
+  <g transform="translate(30,0)">
+    <text x="117" y="10" font-size="10" style="text-anchor:middle">
+        longitude of the AS's</text>
+    <text x="117" y="25" font-size="10" style="text-anchor:middle">
+        BGP prefixes in Netacuity </text>
+    <text x="178" y="20" font-size="22">)</text>
+    </g>
+</svg>
+</center>
+<p></p>
+<p>
+Additionally, we set the angle of each AS by
+the inferred location of the AS's geographic location.  Specifically, we
+use the centroid of the geographic location of its addresses (geolocation
+by
+<a href="http://info.digitalelement.com/us/">Netacuity</a>).
+</p>

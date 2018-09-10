@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for type, pages_num in routes %}
+    {% for page in range(1,pages_num) %}
+    <sitemap>
+        <loc>{{url('default')~'sitemap/'~type~'/'~page}}</loc>
+        <lastmod>{{lastmod}}</lastmod>
+    </sitemap>
+    {% endfor %}
+{% endfor %}
+</sitemapindex>

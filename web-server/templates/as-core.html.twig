@@ -1,0 +1,82 @@
+{% if location is defined %}
+    {% if as_core_size is not defined %}
+        {% set as_core_png_url="/images/as-core-small.png" %}
+        {% set as_core_image_id="as_core_image_small_id" %}
+        {% set as_core_loading_id="as_core_loading_small_id" %}
+        {% set as_core_size_small="210" %}
+        {% if location.type == "org" %}
+            {% set as_core_large_url= path('org_as_core',{"org":location.id}) %}
+        {% else %}
+            {% set as_core_large_url= path('asn_as_core',{"asn":location.id}) %}
+        {% endif %}
+
+
+        <div class="col-sm-2 col-md-3" style="height:{{as_core_size_small}}px;width:{{as_core_size_small}}px;">
+        <a href="{{as_core_large_url}}">
+
+    {% else %}
+        {% set as_core_png_url="/images/as-core.png" %}
+        {% set as_core_image_id="as_core_image_large" %}
+        {% set as_core_loading_id="as_core_loading_large" %}
+        {% set as_core_size_inner = as_core_size*0.8 %}
+        {% set as_core_shift_top = (as_core_size-as_core_size_inner)/2.1 %}
+        {% set as_core_shift_left = (as_core_size-as_core_size_inner)/1.1 %}
+        <div class="row">
+        <div class="col" style="height:{{as_core_size}}px;width:{{as_core_size}}px;z-index:0">
+            <div style="position absolute;margin-top:1em;
+                top:-3em;
+                right:0;
+                margin-top:2em;
+                z-index:1;
+                line-height:95%;
+                "
+                >
+                {{location.name}}'s <b>AS Core</b><br>&nbsp;(<a href="{{path('about')}}#as-core">about AS Core</a>)
+            </div>
+            <img src="/images/as-core-continents.svg" style="height: 103%; width: auto;position: absolute;
+                top: -15px;
+                left: -35px;
+                z-index:-1;">
+            <div class="col" style="height:{{as_core_size_inner}}px;width:{{as_core_size_inner}}px;
+                margin-top:{{as_core_shift_top}}px;
+                margin-left:{{as_core_shift_left}}px;
+                position:absolute;
+                top:0px;
+                left:0px;">
+    {% endif %}
+
+        <img src="{{as_core_png_url}}" style="height: 100%; width: auto;position: absolute;
+            top: 0;
+            left: 0;
+            z-index:-3;">
+
+        <svg style="height: 100%; width: auto;position: absolute;
+            top: 0;
+            left: 0;
+            z-index:-2;" viewBox="0 0 300 300">
+            <circle cx="150" cy="150" r="147" stroke="black" stroke-width="0" fill="black" fill-opacity="0.7"/>
+        </svg>
+
+
+        {% set as_core_url=path('as_core',{'asn':location.id|raw}) %}
+        {% if as_core_url is defined %}
+            {# <script>
+                function as_core_swap_on_load() {
+                    $('#{{as_core_loading_id}}').css("visibility", "hidden");
+                }
+            </script> #}
+            <img id="{{as_core_image_id}}" src="{{as_core_url}}" style="height: 100%; width: auto;position: absolute;
+                top: 0;
+                left: 0;
+                z-index:0"">
+        {% endif %}
+
+    {% if as_core_size is not defined %}
+        </a>
+        </div>
+    {% else %}
+            </div>
+        </div>
+      </div>
+    {% endif %}
+{% endif %}

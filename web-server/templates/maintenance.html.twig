@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}{{parent()}}: Maintenance {% endblock %}
+{% block description %}{% endblock %}
+
+{% block navbar %}
+<div id="navbar" class="container">
+<nav class="navbar navbar-expand navbar-light justify-content-front asrank-navbar">
+    {% include 'navbar-logo.html.twig' %}
+  <a class="navbar-brand" href="#"></a>
+  <div class="collapse navbar-collapse justify-content-front" id="navbarToggler">
+      <div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" id="navData" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Data </a>
+        <div class="dropdown-menu" aria-labelledby="navData">
+            <div style="text-align:center;font-size:80%;font-color:grey;">(external links)</div>
+            <a class="dropdown-item" href="http://www.caida.org/data/as-relationships/">AS Relationship</a>
+            <a class="dropdown-item" href="http://www.caida.org/data/as-organizations/">AS Organization</a>
+        </div>
+      </div>
+    </ul>
+  </div>
+</nav>
+</div>
+{%endblock%}
+
+
+{% block body %} 
+    <div class="asrank-maintence">
+        <h1> Please Stand By <br/></h1>
+        <!--img style="width:30%;height:30%" src="images/please-stand-by.jpg"/-->
+        AS Rank is currently down for maintenance. <br/>
+        We appologies for the inconvenience.
+
+        {% if maintenance == true %}
+            <div> Hello fish </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% set maintenance = true %}
+    {{parent()}}
+{% endblock %}
+
+
+
+

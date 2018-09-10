@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% set maintenance = false %}
+<html lang="en">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-116819380-1"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-116819380-1');
+	</script>
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    <!-- Required meta tags -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=1000, initial-scale=1, shrink-to-fit=yes">
+    <!-- meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" -->
+    <meta charset="UTF-8">
+    {% set page_title = "" %}
+    <title>AS Rank{% block title %}{{page_title}}{% endblock %}</title>
+    <META NAME="Description" CONTENT="{% block description %}{% endblock %}">
+    {% block stylesheets %}
+        <!-- Bootstrap CSS -->
+        <link href="{{asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{asset('css/flag-icon.css')}}" rel="stylesheet">
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <link rel="stylesheet" href="{{asset('css/asrank.css')}}">
+    {% endblock %}
+    {% block jsonld %}{% endblock %}
+
+    <style>
+        .navbar .navbar-toggle .icon-bar {
+        background-color: CornflowerBlue ;
+        }
+    </style>
+
+</head>
+<body>
+    <div style="background-color:black;width:100%;height:.5em"></div>
+    {% block navbar %} {% include 'navbar.html.twig' %} {% endblock %}
+    <!--
+    <table border="0" style="position:static;x:0;padding:0;margin:0;width:100%">
+        <tr>
+            <td style="white-space:nowrap;">{% block header_older %}{{page_title}}{% endblock %}</td>
+        </tr>
+    </table>
+    <div>
+      <span class="d-none d-sm-block">Small</span>
+      <span class="d-none d-md-block">Medium</span>
+      <span class="d-none d-lg-block">Large</span>
+      <span class="d-none d-xl-block">Extra Large</span>
+    </div>
+    -->
+
+    <!--------------------------------------------------------->
+
+
+    <div id="content" class="asrank-content container">
+        <div id="default_error_location" class="asrank_result_error" style="visibility: hidden;"></div>
+        {% block body %}{% endblock %}
+    </div>
+    {% block datasources %}{% endblock %}
+    {% block footer %} {%include 'footer.html.twig' %} {% endblock %}
+
+    <!--------------------------------------------------------->
+    {% block javascripts %} 
+        <script>
+            // URL for the restful database
+            var RESTFUL_DATABASE_URL="{{RESTFUL_DATABASE_URL}}";
+            var PAGE_NUMBER_RANGE={{PAGE_NUMBER_RANGE}};
+        </script>
+
+        <script src="{{asset('js/popper.min.js')}}"></script>
+        <script src="{{asset('js/jquery.min.js')}}"></script>
+        <script src="{{asset('js/bootstrap.min.js')}}"></script>
+        <script src="{{asset('js/asrank.js')}}"></script>
+        <script src="{{asset('js/table_trees.js')}}"></script>
+
+        <script>
+            // initilizes the tooltips
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            })
+            {% if maintenance == false %}
+                // fills in the footer information
+                dataset_information();
+            {% endif %}
+        </script>
+    {% endblock %}
+</body>
+</html>

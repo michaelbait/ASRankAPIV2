@@ -1,0 +1,10 @@
+twig:
+    paths: ['%kernel.project_dir%/templates']
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+
+    globals:
+        # URL for the RESTFUL DATABASE
+        RESTFUL_DATABASE_URL: '%env(RESTFUL_DATABASE_URL)%'
+        # The number of page numbers to display before and after the current page
+        PAGE_NUMBER_RANGE: '%PAGE_NUMBER_RANGE%'

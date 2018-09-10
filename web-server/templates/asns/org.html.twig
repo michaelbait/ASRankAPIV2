@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title%}{{parent()}}: AS{{org_info.name}} {% if org_info.get_name() %} ({{org_info.get_name()}}) {% endif %}
+{%endblock%}
+{% block description %}AS Rank:{{org_info.rank}} Customer Cone Asns:{{org_info.cone.asns}} Org Transit Degree:{{org_info.degree.org.transit}}{%endblock%}
+{% block jsonld %}<script type="application/ld+json"> {{org_info.get_json_ld|raw}}</script> {% endblock %}
+
+
+
+{% block body %}
+    {%set name=org_info.name%} {% include 'asns/asn_search_form.html.twig' %}
+
+<div class="row">
+        {% include 'as-core.html.twig' %}
+    <div class="asrank-asn-info-div">
+    <table class="asrank-info-table table-condensed"
+        <tr><th>Org name</th><td colspan="7">{{org_info.name|raw}}</td></tr>
+        <tr><th>country</th><td colspan="7">
+                {% if org_info.country_name is defined %}
+                    {{org_info.country_name|raw}} <span class="flag-icon flag-icon-{{org_info.country|raw|lower}}"></span>
+                {% else %}
+                    <span class="asrank-unknown">unknown</span>
+                {% endif %}
+            </td></tr>
+        <tr><th>Org rank</th><td colspan="7">{{org_info.rank|raw}}</td></tr>
+        <tr><th>Customer Cone </th>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are observed to be in the selected ASN's customer cone."> 
+                {{org_info.cone.orgs}}<br>
+                <span>orgs</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are observed to be in the selected ASN's customer cone."> 
+                {{org_info.cone.asns}}<br>
+                <span>asns</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of prefixes that are observed to be in the selected ASN's customer cone."> 
+                {{org_info.cone.prefixes}}<br>
+                <span>prefixes</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of addresses that are observed to be in the selected ASN's customer cone."> 
+                {{org_info.cone.addresses}}<br>
+                <span>addresses</span>
+            </td>
+        </tr>
+        <tr><th>ASN degree</th>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that were observed as neighbors of the selected ASN in a path."> 
+                {{org_info.degree.org.transit}}<br>
+                <span>org transit</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that were observed as neighbors of the selected ASN in a path."> 
+                {{org_info.degree.org.global}}<br>
+                <span>org global</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that where observed as neighbors of the selected ASN in a path, where the selected ASN was between, i.e. providing transit, for two other ASNs."> 
+                {{org_info.degree.asn.transit}}<br>
+                <span>asn transit </span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are providers of the selected ASN."> 
+                {{org_info.degree.asn.global}}<br>
+                <span>asn global</span>
+            </td>
+        </tr>
+        <tr><th>ASN members</th>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of member ASNs that where seen in BGP."> 
+                {{org_info.number_members_ranked}}<br>
+                <span>observed</span>
+            </td>
+            <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The total number of member ASNs."> 
+                {{org_info.number_members}}<br>
+                <span>total</span>
+            </td>
+        </tr>
+    </table>
+    </div>
+</div>
+    {% if location.area == "as-core" %}
+        {% set as_core_size="700" %}
+        {% include 'as-core.html.twig' %}
+    {% elseif location.area == "links" %}
+        <div class="asrank-asn-links-div" id="asn_links_table"> </div>
+    {% endif %}
+    <div class="asrank-asn-links-div" id="org_members_table"> </div>
+{% endblock %}
+
+{% block datasources %} {% include 'data-sources.html.twig' %} {% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        {% if location.area == "members" %}
+            build_info_table({{'"org_members"'}}, '{{org_info.id}}',{{page}},{{page_size}},'{{sort_type}}', '{{sort_dir}}', '{{org_info.get_json_ld|raw}}');
+        {% endif %}
+    </script>
+{% endblock %}
+

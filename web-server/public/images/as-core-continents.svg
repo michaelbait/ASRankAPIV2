@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 700 630" style="enable-background:new 0 0 700 630;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFC0CB;}
+	.st1{font-family:'Arial-BoldMT';}
+	.st2{font-size:14px;}
+	.st3{fill:#90EE90;}
+	.st4{fill:#ADD8E6;}
+	.st5{fill:#F08080;}
+	.st6{fill:#DCDCDC;}
+	.st7{fill:#FFE4B5;}
+</style>
+<g id="Continents">
+	<path class="st0" d="M386,581.6c-51.1,0-101.1-14.8-144.8-43.5c-59.2-38.8-99.7-98.4-114.1-167.7l19.6-4.1
+		c13.3,64.1,50.8,119.1,105.5,155c54.7,35.9,120.2,48.3,184.2,35c30.1-6.3,58.4-18,84.2-34.8l10.9,16.7
+		c-27.8,18.2-58.5,30.9-91,37.6C422.3,579.7,404.1,581.6,386,581.6z"/>
+	<text transform="matrix(-0.9232 -0.3843 0.3843 -0.9232 334.5057 566.921)" class="st1 st2">North America</text>
+	<path class="st3" d="M419,609.7l-2.2-19.9c75.7-8.4,145.1-48.3,190.5-109.4l16.1,11.9C574.7,557.9,500.2,600.7,419,609.7z"/>
+	<text transform="matrix(-0.8674 0.4976 -0.4976 -0.8674 569.1776 535.8574)" class="st1 st2">South America</text>
+	<path class="st4" d="M647.6,362l-19.7-3.4c10.8-62.2-2.5-125.4-37.5-177.9l16.6-11.1C644.9,226.3,659.3,294.7,647.6,362z"/>
+	<text transform="matrix(0.2065 0.9785 -0.9785 0.2065 627.2916 241.0763)" class="st1 st2">Europe</text>
+	<path class="st5" d="M669.5,399.7l-19.2-5.6c15.4-52.5,14.9-107.9-1.5-160.2c-16.5-52.2-47.8-97.9-90.5-132.1l12.5-15.6
+		c45.9,36.7,79.5,85.7,97.1,141.7C685.5,283.9,686.1,343.3,669.5,399.7z"/>
+	<text transform="matrix(0.3006 0.9537 -0.9537 0.3006 648.716 213.0882)" class="st1 st2">Africa</text>
+	<path class="st6" d="M125.4,362.1c-18.1-103.4,26.7-207.8,114-266.1c58.9-39.3,129.6-53.3,199-39.4c69.4,13.9,129.3,54,168.5,112.8
+		l-16.6,11.1C554,126.1,498.7,89.1,434.5,76.3c-64.2-12.8-129.5,0.1-183.9,36.4c-80.7,53.8-122.1,150.4-105.4,246L125.4,362.1z"/>
+	<text transform="matrix(0.9281 -0.3723 0.3723 0.9281 279.5027 88.7902)" class="st1 st2">Asia</text>
+	<path class="st7" d="M111.5,316.1l-20,0c0.1-74.6,28.2-145.8,79-200.5c50.8-54.6,119.8-87.8,194.3-93.3l1.5,19.9
+		c-69.4,5.1-133.7,36-181.1,86.9C137.8,180.1,111.6,246.5,111.5,316.1z"/>
+	<text transform="matrix(0.6803 -0.733 0.733 0.6803 162.1094 144.944)" class="st1 st2">Oceania</text>
+</g>
+</svg>

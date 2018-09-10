@@ -1,0 +1,10 @@
+{# templates/bundles/TwigBundle/Exception/error500.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Page not found!</h1>
+    <p>
+        Requested page not found!. Verify url or
+        <a href="{{ path('default') }}">return to main page</a>.
+    </p>
+{% endblock %}

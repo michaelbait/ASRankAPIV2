@@ -1,0 +1,840 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}}: About {% endblock %}
+{% block description %} Provides background on Autoumous Systems (AS) umbers, relationships, and ranking.{% endblock %}
+
+{% block stylesheets %}
+    {{parent()}}
+    <style>
+        h3  {
+            margin-left:1em;
+        }
+        .float-left {
+            float:left;
+            margin-right:2em
+        }
+        .float-right{
+            float:right;
+            margin-left:2em
+        }
+        .asrank-image{
+            -moz-box-shadow:10px 10px 5px #888;
+            -webkit-box-shadow:10px 10px 5px #888;
+            box-shadow:5px 5px 7px #888
+        }
+    </style>
+{% endblock %}
+
+{% block body %} 
+
+<div class="noprint">
+        <h2><a name="toc">Table of Contents</a></h2>
+        <ul>
+		<li><a href="#goal">Goal of the AS Rank project</a></li>
+		<li><a href="#rank">AS Rank</a></li>
+		<li><a href="#relationships">AS Relationships</a></li>
+		<li><a href="#customer-cone">Customer Cone</a></li>
+        <li><a href="#visualizations">Visualizations</a>
+            <ul>
+                <li><a href="#as-core">AS Core</a></li>
+            </ul>
+        </li>
+        <!--
+		<li><a href="#geographic-graph">Geographic Graph</a></li>
+		<li><a href="#location-graph">Location Graph</a></li>
+		<li><a href="#router-location-graph">Router-level Location Graph</a></li>
+        -->
+		<li><a href="#caveats">Caveats and Limitations</a></li>
+		<li><a href="#sources">Data Sources</a></li>
+		<li><a href="#citation">Citation</a></li>
+		<li><a href="#references">References</a></li>
+        </ul>
+</div>
+
+<h2>
+<a name="goal">Goal of the AS Rank project</a>
+</h2>
+
+<p>
+
+
+Independent networks (Autonomous Systems, or ASes) engage in typically
+voluntary bilateral interconnection ("peering") agreements
+to provide reachability to each other for some subset of the Internet.
+The implementation of these agreements introduces a non-trivial
+set of constraints regarding paths over which Internet traffic can flow,
+with implications for network operations, research, and evolution.
+Realistic models of Internet topology, routing, workload, and performance
+must account for the underlying economic dynamics. Although most
+interconnection ("peering") agreements between networks are secret,
+some information can be inferred from traceroute-derived and BGP-derived
+<a href="http://www.caida.org/data/overview/">Internet topology
+data sets</A> at IP, router, and AS granularities.
+(For additional details on economic modeling, See our recently proposed
+<a href="http://www.caida.org/funding/netse-econ/netse-econ_proposal.xml"
+>research on the economics of Internet transit and peering
+interconnections</a>.)
+AS rank uses these data sets to estimate a macroscopic ranking of
+Autonomous Systems based on a measure of their influence in the
+global routing system, specifically the size of their <i>customer cone</i>
+based on inferred business relationships among ASes. We explain these
+concepts in more detail below.
+</p>
+
+<p> An AS's rank is based on it's customer cone size, which in turn is is
+inferred from BGP paths by CAIDA's AS relationships inference algorithm<a
+    href="#ref_ACV"><sup>9</sup></a>.
+</p>
+
+<h2>
+<a name="rank">AS Rank</a>
+</h2>
+
+<table border=1
+style="text-align:right;float:left;margin-right:1em;margin-top:.5em">
+<tr> <th> num. ASNs </th><td>10</td><td>9</td><td>9</td><td>8</td><td>3</td><td>2</td></tr>
+<tr> <th> rank </th><td>1</td><td>2</td><td>2</td><td>4</td><td>5</td><td>6</td></tr>
+</table>
+
+<p>
+An AS's rank is equal to one greater than number of ASs with larger customer cone sizes
+or degrees. So ASes with equally large customer cone sizes and degrees will
+have the same rank.  In such a case, the rank will increase by multiple steps
+"after" a sequence of equally-ranked ASes.
+</p>
+
+<h2 style="clear:both; margin-top:1.5rem;">
+<a name="degree">AS Degree</a>
+</h2>
+
+<div style="width:455px; margin-top:-5px;" class="float-left; asrank-image">
+    <img src="{{asset('images/degree-types.png')}}" width="453" height="218" alt="Graph of ASes, showing the different types of relationships that can exist between ASes.">
+
+	<p>
+	<b>figure 1.</b> Comparing the global degree, transit degree, and 
+    outdegrees of ASes. 
+	</p>
+</div>
+
+<p>
+    Degree is the number of neighbors that a node, an AS in our case, has in a graph. There are various types of degrees:
+    global, out, and transit. These degrees are applied to an unlabeled graph and so edge types are ignored. 
+    Specifically, a global degree is a standard degree in which all of an AS's neighbors are counted. out and 
+    transit degrees, however, change based on the observed paths. For example, out degree only counts neighbors that follow the 
+    AS in the path and transit degree only counts neighbors that are found in at least one path where the AS is in between
+    that neighbor and another neighbor of the AS.  
+</p>
+
+<p>
+    In Figure 1, ASes 2, 3, 4, and 5 have an outdegree of 0, since no nodes 
+    follow them in any path. ASes 6 and 7, however, have an outdegree of 2, 
+    while AS 1 has a high degree of 3 because it hosts a monitor. 
+</p>
+
+<p>
+    If we consider a graph labeled with relationships, then there are additional 
+    degree types such as siblings, customers, providers, and peers. An AS's sibling degree 
+    is the number of neighbor ASes it shares from the same organizations. Customer, 
+    provider, and peer degrees are the number of neighbors that are customers, providers,
+    and peers respectively.
+</p>
+
+<h2 style="clear:both;">
+<a name="relationships" id="relationships">AS Relationships</a>
+</h2>
+
+<div style="width:455px;" class="float-right asrank-image">
+    <img src="{{asset('images/pyramid.png')}}" width="453" height="218" alt="Graph of ASes, showing the different types of relationships that can exist between ASes.">
+
+	<p>
+	<b>figure 2.</b> Types of AS relationships. The ASes at the bottom of
+	the graph, D, E, and F, are customers of those above. ISPs in
+	the middle, B and C, are both providers of ASes below and
+	customers of ISPs above. ISPs B and C are also peers of each
+	other. ISP A at the top is a provider to B and C and a customer
+	of no one.
+	</p>
+</div>
+
+<h3>Background</h3>
+
+<p>
+Although business agreements between ISPs can be complicated, the original
+model introduced by Gao <a href="#ref_GAO"><sup>1</sup></a> abstracts
+business relationships into the following three most common types: </p>
+<ol>
+  <li>customer-to-provider (<em>c2p</em>) (or if looked at from the opposite direction, provider-to-customer <em>p2c</em>),</li>
+  <li>peer-to-peer (<em>p2p</em>), and</li>
+  <li>sibling-to-sibling (<em>s2s</em>)</li>
+</ol>
+
+
+<p>
+The justification for this classification is that an AS must buy
+transit services for any traffic destined to parts of the Internet
+that this AS neither owns nor can reach through its customers. In
+Figure 2, arrow directions reflect flows of money -- ASes at
+lower levels are <em>customers</em> who
+pay ISPs (<em>providers</em>) at higher levels in exchange for
+access to the rest of the Internet, also known as <em>transit</em>.
+We refer to links between a customer and a provider as <b><em>
+c2p</em> (<em>p2c</em>) links</b>.
+In Figure 2, D-&gt;B, E-&gt;B, F-&gt;C, B-&gt;A, and C-&gt;A are
+c2p links.
+</p>
+
+
+<p>
+A <b><em>p2p</em> link</b> connects two ISPs who have
+agreed to exchange traffic on a quid pro quo basis. Peers should exchange
+traffic only between each other and each other's customers. Peering
+allows growing ISPs to save money on transit costs they would
+otherwise have to pay to deliver traffic to/from their customers.
+In Figure 2, B-C is a p2p link, unidirectional since
+neither B nor C pays the other for the traffic they exchange.
+</p>
+
+<p>
+An <b><em>s2s</em> link</b> connects two ASes
+with a common administrative boundary.  Such links usually
+appear as a result of mergers and acquisitions, or under certain
+network management scenarios.
+</p>
+
+<div style="width:530px;" class="float-right asrank-image">
+    <img src="{{asset('images/valid-invalid-paths.png')}}" width="530" height="277" alt="Examples of paths through a graph of ASes.">
+
+	<p>
+	<b>figure 3.</b> The top two paths 1 and 2 are valid, while the bottom two
+	3 and 4 are invalid.
+	</p>
+</div>
+
+<p>
+We use the notion of money transfers between ASes to define
+<em>valid</em> and <em>invalid</em>
+AS paths. A <b>valid path</b> between source
+and destination ASes is one in which for <em>every</em>
+ISP providing transit (a transit provider), there exists a customer
+immediately adjacent to the ISP in the AS path.
+An <b>invalid path</b> has at least one transit provider
+not paid by a neighbor in the path.
+</p>
+
+<p>
+In Figure 3 the top two examples are valid paths, while the bottom
+two are invalid. In Example 1 the transit providers are A, B, and
+C. ISPs B and C pay to A, D pays to B, and F pays to C. In Example
+2 the transit providers are B and C, and they are paid by D and F,
+respectively. In contrast, in Example 3 the transit provider is B,
+but not only does no one pay B, but B itself pays both A and Z.
+Example 4 also illustrates a situation where nobody pays transit
+provider B.
+</p>
+
+<p>
+In other words, a valid path must have the following <em>
+valid path pattern</em>: zero or more c2p links,
+followed by zero or one p2p link, followed by zero or more p2c
+links. In addition, s2s links can appear in any number anywhere in
+the path.
+</p>
+
+<h3>History of inference algorithms</h3>
+
+<p>
+Gao's<a href="#ref_GAO"><sup>1</sup></a> pioneering work
+inspired many researchers to seek
+approaches to inferring ISP business relationships using information
+from publicly available BGP routing tables. Gao used the concept
+of valid paths as the basis for her inference heuristic and identified
+the "top" provider in a given path based on AS degree (the number of
+ASes with observed connectivity to a given AS).
+</p>
+
+<p>
+Subramanian <em>et al.</em><a href="#ref_SARK"><sup>2</sup></a>
+provided a more elegant mathematical formulation based on the
+concept of valid paths, but they simplified the problem by not
+inferring s2s links. Using maximization of valid paths as an objective,
+they formulated the AS relationship inference problem as a
+combinatorial optimization problem: given an undirected
+graph <em>G</em> derived from a set of BGP paths
+<em>P</em>, assign the edge type (c2p or p2p)
+to every edge in <em>G</em> such that the total
+number of valid paths in <em>P</em> is maximized.
+They called the problem the <b>type-of-relationship (ToR) problem</b>,
+conjectured that it is NP-complete, and provided a heuristic solution.
+</p>
+
+<p>
+Di Battista <em>et al.</em><a href="#ref_DPP"><sup>3</sup></a> and independently
+Erlebach <em>et al.</em><a href="#ref_EHS"><sup>4</sup></a> proved that the
+ToR problem is indeed NP-complete. The latter proved also that it is even
+harder, APX-complete. More importantly for practical purposes, both
+studies demonstrated that p2p links <em>cannot</em>
+be inferred in the ToR problem formulation, and they developed mathematically
+rigorous approximate solutions to the ToR problem but inferred
+only c2p and p2c links.  No technique thus far reliably identifies
+p2p links.
+</p>
+
+<p>
+Dimitropoulos, <em>et al.</em><a href="#ref_DKH1"><sup>6</sup></a>
+identified still other issues with the ToR formulation, like the random
+breaking of ties which can yield obviously incorrect inferences,
+e.g., well-known large providers are inferred as customers
+of small ASes. In the first paper<a href="#ref_DKH1"><sup>6</sup></a>
+we handled this issue with multiobjective optimization techniques
+that incorporated AS degree into the inference. In a subsequent
+paper<a href="#ref_DKH2"><sup>7</sup></a> we introduced improved
+algorithms that determine not only c2p but also p2p links (for
+those we can detect from BGP data). These improvements achieved
+more accurate AS relationship inferences,
+which we demonstrate against ground truth for a set of ASes.
+Benjamin Hummel and Sven Kosub
+<a href="#ref_BS"><sup>8</sup></a> introduced the idea that
+the resulting graph should be acyclic, i.e. should contain no cycles,
+and presented a new algorithm that does the assignment and reduces
+the number of cycles.  Our current technique creates no cycles,
+but at the cost of ``valid'' (valley-free) paths in the graph.
+M. Luckie et al.<a href="#ref_ACV"><sup>9</sup></a> dropped the
+valley-free assumption and instead
+relied on three assumptions about the Internet's inter-domain structure:
+(1) an AS enters into a provider relationship to become globally reachable;
+and (2) there exists a peering clique of ASes at the top of the hierarchy,
+and (3) there is no cycle of p2c links. 
+</p>
+</p>
+<h2>
+<a name="customer-cone">Customer Cone</a>
+</h2>
+
+<p>
+One metric of the resulting AS relationship graph that allows comparison
+across ASes is the <b>customer cone</b> -- the set of ASes, IPv4
+prefixes, or IPv4 addresses that can be
+reached from a given AS following only customer links.
+</p>
+
+<p>
+Looking specifically at the <b>AS customer cone</b>,
+we define an AS <i>A</i>'s <b>AS customer cone</b>
+as the AS <i>A</i> itself plus all the ASes that can be reached
+from <i>A</i> following only p2c links <b>in BGP paths we observed</b>.
+In other words, <i>A</i>'s customer cone contains <i>A</i>, plus <i>A</i>'s
+customers, plus its customers' customers, and so on.
+</p>
+
+<p>
+Each AS announces a set of IPv4 prefixes.  Each IPv4 prefix represents a
+set of contiguous IPv4 addresses which are routed as a unit.  Prefixes can
+be nested, with the most specific prefix used for routing over less
+specific prefixes.  To find the set of prefixes which are reachable in
+AS <i>A</i>'s <b>IPv4 prefix customer cone</b> create the union of prefixe
+announced by all ASes found in AS <i>A</i>'s <b>AS customer cone</b>.
+AS <i>A</i>'s <b>IPv4 address customer cone</b> is the set of addresses
+covered by AS <i>A</i>'s <b>IPv4 prefix customer cone</b>.
+Prefixes overlap, which represent a set of IPv4 addresses.
+
+<p>
+The size of the
+customer cone of an AS reflects the number of other elements (ASes,
+IPv4 prefixes, or IPv4 addresses) found in it's set.  An AS in the customer
+cone is assumed to pay, directly or indirectly, for transit, and provides a
+coarse metric of the size or influence of an AS in the routing system.
+</p>
+
+
+<div style="width:200px;" class="float-right asrank-image">
+    <img style="width:200px" src="{{asset('images/customer-cones.png')}}">
+
+  <a name="fig3"><b>figure 4.</b>  This graph shows the respective cone sizes for each AS in the graph.</a>
+</div>
+
+<!--
+<p> The <b>customer cone size</b>, that is, the number of ASes in
+the cone, provides a coarse measure since individual AS sizes can
+differ drastically. </p>
+-->
+
+<p>Figure 4 depicts several AS customer cones, ASes <b>D, F,
+G</b>, and <b>I</b> all sit at the bottom of the hierarchy
+and so only have a single AS in their cone. <b>H</b> ranks
+a little bit higher with 2 ASes.  Both <B>C</b> and <B>B</B>
+tie with 3 ASes.  Note that <B>B</B> and <B>C</B> both have
+<B>F</B> in their respective cones.  <B>A</b> is ranked at the top
+of the hierarchy with 6 ASes in its customer cone.
+</p>
+
+<p>
+ASes with large customer cones play an important role
+in the Internet's capital and governance structure. At the top of
+this hierarchy are ISPs commonly known as Tier-1 ISPs, which
+do not pay for transit to upstream providers at all; instead they
+peer with each other to provide connectivity to all
+destinations in the Internet. At the bottom of the hierarchy are
+customer ASes who do not have their own customers and pay
+providers to reach all destinations in the Internet.
+</p>
+
+<p>
+We define <b>peering cone size ratio</b> as the ratio in
+customer cone sizes of a pair of ASes if they (hypothetically) peered.
+Similar customer cone sizes will have this ratio closer to 100,
+also an indication the ASes have more incentive to peer.
+The closer this ratio is to zero, the larger the difference in
+customer cone sizes, and the less incentive the larger provider
+will have to peer with the smaller.</p>
+
+<p>
+If a given link (AS relationship) is currently a customer link
+and changes to a peering link, then the provider-turned-peer's customer
+cone will likely shrink, because the cone will lose any customer ASes
+that the given AS used to access through that customer-turned-peer.
+The customer-turned-peer's cone size will not change since the
+provider-turned-peer is not included in the customer cone.
+To compare magnitude of differences, the <b> peering cone size ratio</b>
+always uses the larger customer cone as the denominator.
+For example, for AS pair S and N, with customer cone sizes
+C(S) and C(N), respectively , if C'(S) and C'(N) were
+their respective customer cone sizes if S and N became
+p2p peers (with other links unchanged),
+then the <b>peering cone size ratio </b> is C'(N)/C'(S)
+if C'(S) > C'(N), otherwise C'(S)/C'(N).
+</p>
+
+	<div style="width:600px;" class="float-left asrank-image">
+        <img style="width:600px" src="{{asset('images/customer-to-peer.png')}}">
+	<span style="font-size:-1"> <b> figure 5. </b>
+	    shows the effect on customer cones of changing the relationship of <b>A</b> to <b>B</b>
+	    from its current one to a peering relationship.
+	    <p>
+	</span>
+	</div>
+
+	<p>
+	Figure 5 illustrates how different relationships affect the customer cone sizes
+	of AS <b>A</b> and <b>B</b>.  If the original graph had <b>B</b> as a
+	customer of <b>A</b> then <b>A</b>'s
+        cone contains 7 ASes: <b>A,B,C,D,E,F,G</b>.  <b>B</b>'s cone
+        contains three ASes:<b>B,F,G</b>.  If the link between <b>A</b> and
+        <b>B</b> is changed to a peering link, <b>A</b> loses customers
+        <b>B</b> and <b>G</b>, which it had access to exclusively through
+        its customer relationship with <b>B</b>.  <b>A</b>'s cone does not
+        lose <b>F</b>, since it can still reach it through its customer
+        relationship with <b>C</b>. <b>A</b>'s cone size thus shrinks to 4
+        ASes:<b>A,C,D,F</b>.  Since AS <b>B</b> did not previously reach
+        any customers through <b>A</b>, its customer cone is unaffected by
+        this change.</p>
+
+<br clear="both">
+<!--
+<h2>
+<a name="as-link-geo">AS Link Geographic</a>
+</h2>
+
+  <div style="padding:1em;float:right;width:220px;">
+  <img width="217" height="127" src="{{asset('images/as-link-geo-3356-sample.png')}}"><br />
+    <a name="fig5"><b>Figure 5.</b> Inferred city-level view of locations 
+    where AS 3356 connects with it's neighbors.
+  </div>
+
+  <p>ISPs maintain points-of-presence (PoPs) -- locations with
+routers/servers and related equipment/personnel -- in cities across the
+world. We do not currently distinguish between different PoPs in the same
+city, so we infer a city-level graph by inferring the locations where 
+different <a href="https://www.caida.org/data/as-relationships-geo/">AS
+links interconnect</a>. 
+We combined inference techniques that leveraged four types of data: 
+<a
+href="http://www.cisco.com/c/en/us/about/press/internet-protocol-journal/back-issues/table-contents-24/bgp-communities.html">BGP
+Communities (BC)</a>,
+<a href="https://en.wikipedia.org/wiki/Looking_Glass_server"> Looking Glass
+servers (LG)</a>,
+<a
+href="http://www.caida.org/publications/papers/2013/inferring_multilateral_peering/">Multilateral
+Peering (MLP)</a>, 
+and 
+<a href="http://www.caida.org/data/internet-topology-data-kit/">Macroscopic
+Internet Topology Data Kit (ITDK)</a>.
+Each marker shows a city with at least one interconnection.  
+</p>
+<p>In the large
+version, individual locations can be selected. 
+ When at least one  location 
+        is selected on the map, selected locations are yellow, locations
+which share at least one AS with a selected 
+        location are colored red, and locations which share no AS with a
+selected location are grey.  Each selected location
+        is displayed down the left side of the table, AS at those locations
+are along the top, and with intersection 
+        between the two labels marked with a X. 
+  </p>
+
+
+<br clear="both">
+<h2>
+<a name="geographic-graph">Geographic Graph</a>
+</h2>
+
+  <div style="padding:1em;float:right;width:400px;">
+  <img width="217" height="127" src="{{asset('images/routergraph-sample.png')}}"><br />
+    <a name="fig5"><b>Figure 5.</b> Inferred city-level view of AS9304's routers using ITDK 2010.07 and MaxMind's GeoLiteCity 2010.09 geolocation database. 
+  </div>
+
+  <p>ISPs maintain points-of-presence (PoPs) -- locations with routers/servers and related equipment/personnel -- in cities across the world. We do not currently distinguish between different PoPs in the same city, so we infer a city-level graph of routers for each AS (ISP). We start with our <a href="http://www.caida.org/data/active/internet-topology-data-kit/">ITDK</a> dataset, which contains annotated router level topology data based on our active measurements of the global Internet. We then use MaxMind's free <a href="http://www.maxmind.com/app/geolitecity">GeoLite City</a> geolocation database to map a router's interfaces to geographic locations. If a router's interfaces do not map to the same geographic location, we currently omit its geographic annotation. We do retain "singleton" router nodes (which themselves may represent multiple routers in the same city) for which we saw no observed links to remote (different city) routers in the same AS. 
+  </p>
+
+<h2 style="clear:both">
+<a name="location-graph">Location Graph</a>
+</h2>
+
+  <div style="padding:1em;float:right;width:400px;">
+  <a href="images/location-graph-sample-big.jpg"><img width="400" height="223" src="{{asset('images/location-graph-sample.jpg')}}"></a>
+    <a name="fig6"><b>Figure 6.</b>   Inferred location graph for AS4413's using the ITDK 2012.04 and Netacuity geolocation database. 
+  </div>
+
+  <p>In order to improve visibility of highly clustered PoPs, we have create a <b>Location Graph</b> in which we loosen the geographic mapping seen in the <b>Geographic Graph</b>. Nodes are originally placed in the geographic location, but are then expanded to create a visualizable distance between each location. The <b>Location Graph</b> represents the PoP locations for a single AS. Each location is represented by a white circle. A colored country is drawn around all its locations and its name displayed. Links are drawn between locations with the darkness of the line reflecting the smaller of the two nodes' degree. 
+  </p>
+
+<h2 style="clear:both">
+<a name="router-location-graph">Router-level Location Graph</a>
+</h2>
+  <div style="padding:1em;float:right;width:400px;">
+  <a href="images/location-individual-graph-sample-big.jpg"><img width="400" height="267" src="{{asset('images/location-individual-graph-sample.jpg')}}"></a>
+    <a name="fig7"><b>Figure 7.</b>   Inferred router-level location graph for AS4413's using the ITDK 2012.04 and Netacuity geolocation database. 
+  </div>
+
+  <p>We also provide a <b>Location Router-Level Graph</b> which shows the routers operated by a single AS in a single location, and the locations and ASes connected to those routers. The main location is visualized as a large ivory circle in the middle of the graph. Routers in the main location are represented by rectangles. ASes in the main location are represented by numbered circles. If the routers connect to routers in the same AS, but a different location, that connection is represented by a link to a numbered circle AS in that location. </p>
+-->
+
+<h2 style="clear:both">
+<a name="visualizations">Visualizations</a>
+</h2>
+
+<h3 style="clear:both">
+<a name="as-core">AS Core</a>
+</h3>
+
+<div class="float-left asrank-image" style="width:110px;">
+    <img src="images/as-core.png" width="110px" alt="Coordinates of AS in AS Core equations"><br>
+    <b>figure 6</b> AS Core visualization.
+</div>
+
+<div class="float-right asrank-image">
+    <center>
+	<svg width="200" height="200" style="border-style:none;border-width:2px">
+		<rect x="0" y="0" width="200" height="200" fill="white"></rect>
+
+		<rect x="138" y="142" width="5" height="5" fill="white" stroke="black" stroke-width="1"></rect>
+
+		<circle cx="90" cy="95" r="2" stroke="none" fill="black"></circle>
+		<line x1="95" y1="100" x2="135" y2="140" stroke="black"></line>
+		<line x1="135" y1="140" x2="135" y2="135" stroke="black"></line>
+		<line x1="135" y1="140" x2="130" y2="140" stroke="black"></line>
+		<g transform="translate(70,130)">
+		<text x="1" y="8" font-size="8" style="text-anchor:end">
+			1-log<tspan font-size="12">(</tspan></text>
+		<text x="22" y="3" font-size="8" style="text-anchor:middle">cone size</text>
+		<line x1="3" y1="5" x2="45" y2="5" stroke="black"></line>
+		<text x="22" y="12" font-size="8" style="text-anchor:middle">max size</text>
+		<text x="48" y="8" font-size="12" style="text-anchor:end">)</text>
+
+	cone/max.cone)
+		</g>
+
+		<line x1="95" y1="95" x2="160" y2="95" stroke-dasharray="5,5" style="stroke:black;fill:none;stroke-width:1;"></line>
+		<path d=" M160,100 A45,55 0 0,1 145,140" style="stroke:black;fill:none;stroke-width:1"></path>
+		<line x1="145" y1="140" x2="142" y2="134" style="stroke:black;fill:none;stroke-width:1"></line>
+		<line x1="145" y1="140" x2="152" y2="139" style="stroke:black;fill:none;stroke-width:1"></line>
+		<text x="160" y="130" font-size="8" style="text-anchor:front">longitude</text>
+
+	<g id="Continents" transform="scale(.08,.08),translate(-50,0)">
+		<path d=" M133,1368 A1044,1044 0 0,0 1726,2029" style="stroke:pink;fill:none;stroke-width:30"></path>
+		<path d=" M1276,2242 A1094,1094 0 0,0 2034,1807" style="stroke:lightgreen;fill:none;stroke-width:30"></path>
+		<path d=" M2184,1334 A1044,1044 0 0,0 2024,576" style="stroke:lightblue;fill:none;stroke-width:30"></path>
+		<path d=" M2205,1463 A1094,1094 0 0,0 1838,301" style="stroke:LightCoral;fill:none;stroke-width:30"></path>
+		<path d=" M2024,576 A1044,1044 0 0,0 111,1153" style="stroke:gainsboro;fill:none;stroke-width:30"></path>
+		<path d=" M1074,64 A1094,1094 0 0,0 61,1153" style="stroke:moccasin;fill:none;stroke-width:30"></path>
+	</g>
+	</svg>
+	<br>
+
+    <svg width="300" height="27" style="border-style:none;border-width:2px">
+        <text x="2" y="20" font-size="12">
+            <tspan font-weight="bold">AS's radius</tspan>
+            = 1 - log
+            <tspan font-size="22">(</tspan>
+        </text>
+      <g transform="translate(31,0)">
+        <line x1="95" y1="14" x2="260" y2="14" stroke="black" stroke-width="2"></line>
+        <text x="180" y="10" font-size="10" style="text-anchor:middle">
+            number of ASes in cone + 1</text>
+        <text x="180" y="25" font-size="10" style="text-anchor:middle">
+            max. number of ASes in cone + 1</text>
+        <text x="260" y="20" font-size="22">)</text>
+      </g>
+    </svg>
+    <br>
+    <svg width="215" height="27" style="border-style:none;border-width:2px">
+        <text x="2" y="20" font-size="12">
+            <tspan font-weight="bold">AS's angle</tspan>
+            =
+            <tspan font-size="22">(</tspan></text>
+
+      <g transform="translate(30,0)">
+        <text x="117" y="10" font-size="10" style="text-anchor:middle">
+            longitude of the AS's</text>
+        <text x="118" y="25" font-size="10" style="text-anchor:middle">
+            BGP prefixes in Netacuity </text>
+        <text x="179" y="20" font-size="22">)</text>
+        </g>
+    </svg>
+    </center>
+    <b>figure 7</b> Coordinates of AS in AS core visualization.
+</div>
+
+<p>
+The CAIDA AS Core visualization depicts the Internet's Autonomous Systems' (ASes) geographic locations, number of customers, and interconnections. Each AS approximately corresponds to an Internet Service Provider (ISP). The geographic location of the individual AS is inferred from the weighted centroid of its address space according to NetAcuity, a commercial geolocation service. The number of direct or indirect customers of an ASA is inferred using its customer cone (described below).
+</p>
+
+<p>
+Each AS node is plotted in polar coordinates (radius, angle) on the circle, as formally defined in the equations below. The distance of each AS node from the center of the circle (the radial coordinate) is the inverse of each AS's customer cone size, (roughly) the number of the AS's direct or indirect customers. ASes at the outer edge of the circle have no customers and ASes at the center have the largest number of customers. The angular coordinate indicates the AS's geographic longitude.
+</p>
+
+<p>Each AS is placed according to the longitude of the centroid of its announced address space. This is representative of the area where NetAcuity inters the majority of this network's activity occurs.  </p>
+
+<div class="float-left sidebox asrank-image">
+    <img src="images/rir-countries.png" alt="Regional Internet Registries"><br>
+    <b>figure 7.</b>The five Regional Internet Registries (RIRs).
+</div>
+
+<div class="float-right sidebox asrank-image">
+    <img src="images/rir.png" alt="Regional Internet Registries"><br>
+    <b>figure 8.</b>AS Core by Regional Internet Registries.
+</div>
+
+<p>The <b>Regional Internet Registries</b> (<b>RIRs</b>) manage allocation and registration of Internet number resources, such as AS numbers, within a particular region of the world. Although most ASes geolocate to the region of the originally allocating RIR, some multinational networks, e.g., AS3257 (Tinent) geolocate outside their region.
+</p>
+<div style="margin-left:1em;"
+    <ul>
+    <li>American Registry for Internet Numbers (ARIN) for the United States, Canada, several part of the Caribbean region, and Antarctica.</li>
+    <li>Reseaux IP Europeens Network Coordination Centre (RIPE NCC) for Europe, Russia, the Middle East, and Central Asia.</li>
+    <li>Latin America and Caribbean Network Information Centre (LACNIC) for Latin America and parts of the Caribbean region.</li>
+    <li>African Network Information Center (AFRINIC) for Africa.</li>
+    <li>Asia-Pacific Network Information Centre (APNIC) for Asia, Australia, New Zealand, and neighboring countries.</li>
+    </ul>
+</div>
+
+<h2 style="clear:both">
+<a name="caveats">Caveats and Limitations</a>
+</h2>
+
+<p>
+Although we know of no more rigorous empirical analysis of
+macroscopic Internet topology enriched with AS relationships, we
+recognize that resource limitations constrain the quality of the
+science we can do.
+</p>
+
+<ul>
+	<li>
+	AS relationships are more complex than allowed for in our approach.
+	The semantics of routing relationships between the same two ASes
+	can differ by peering location or even by prefix; our model
+	oversimplifies these cases by assigning a single relationship to
+	each pair of ASes.
+	</li>
+
+	<li>
+	A truly accurate picture of the Internet topology would require
+	collection of data from every AS, while our automated ranking
+	procedure is limited by the measurement data available to us.
+	</li>
+
+	<li>
+	We know of know reliable heuristic for accurately inferring
+	peering relationships.
+        We are still seeking validation of these heuristics and their specific
+        parameters against ground truth from providers.
+	</li>
+
+        <li>
+        Our city-level visualization is limited by the accuracy of
+        IP address geolocation and our sampling only a subset of
+        a given AS's topology.  Although the ITDK topology contains
+        exclusively router IP addresses (not end hosts), MaxMind's
+        <a href=e"http://www.maxmind.com/app/geolitecity"> GeoLite City </a>
+        is optimized for geolocating end hosts and is likely less
+        accurate for router addresses.  Although our
+        <a hreh="http://www.caida.org/data/active/ipv4_routed_24_topology_dataset.xml">IPv4 Routed /24 Topology</a>
+	measurements
+        exhaustively probe every routed /24, we do not capture the
+        full IPv4 topology, but a broad sample of paths from
+        monitors to target destinations, which results in a
+        sample of the underlying router topology.
+        </li>
+
+</ul>
+
+<p>
+In the future we would like to improve the
+integrity and utility of the relationship-based AS ranking.
+with more vantage points, more probing, cross-validation with
+conjunction with other sources of data, and more powerful data
+processing techniques to support larger topology samples.
+</p>
+
+<h2>
+<a name="sources">Data Sources</a>
+</h2>
+<ol>
+    <li><a href="https://www.digitalelement.com/solutions/">Netacuity
+            (Digital Elements)</a>: is a commercial geolocation service
+        that we use to map ASes and their prefixes to geographic
+        locations. </li>
+    <li> <a
+           href="https://www.caida.org/data/as-organizations/">Organization</a>:
+       this data comes from CAIDA's Inferred AS to Organization Mapping Dataset that maps <a
+           href="https://www.caida.org/research/topology/as2org/">mapping
+           Autonomous Systems (AS) to organizations</a> 
+       using quarterly bulk dumps of WHOIS databases. We use
+       this to provide names for ASes and their organizations, as well as
+       group ASes together that belong to the same organization.
+    </li>
+    <li> <a href="http://www.caida.org/data/as-relationships/">AS
+            Relationships</a> contains CAIDA's inferences about
+        <a href="https://www.caida.org/publications/papers/2013/asrank/">AS 
+        Relationships, Customer Cones, and Validation</a>
+        using monthly BGP traces. We use it to infer each ASes'
+        links and their business types, degree, and customer cone.
+        </li>
+</ol>
+
+<h2>
+<a name="citation">Citation</a>
+</h2>
+<pre class="codeblock" style="margin-left:2em;width:40em">
+@misc{caida_asrank,
+    Howpublished = {{'{{'}}path{http://as-rank.caida.org/{{'}}'}},
+    Month = {<span id="citation_month"></span>},
+    Title = {CAIDA AS Rank},
+    Year = {<span id="citation_year"></span>}
+}
+</pre>
+
+<hr>
+<h2>
+<a name="references">References</a>
+</h2>
+
+<table>
+<tr>
+<td valign="top"><a name="ref_GAO"><sup>1</sup></a></td>
+
+    <td>L. Gao, <a href="http://portal.acm.org/citation.cfm?id=504616">
+    <span class="reftitle">On Inferring Autonomous System Relationships in
+the Internet</span></a>,
+    IEEE/ACM Transactions on Networking, December 2001.
+</td>
+</tr>
+
+<tr>
+<td valign="top"><a name="ref_SARK"><sup>2</sup></a></td>
+    <td>L. Subramanian, S. Agarwal, J. Rexford, and R. H. Katz,
+    <a
+href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?isnumber=21922&arnumber=1019307">
+    <span class="reftitle">Characterizing the Internet Hierarchy from
+Multiple Vantage
+        Points</span></a>,
+    IEEE INFOCOM, 2002.
+
+</td>
+</tr>
+
+<tr>
+<td valign="top"><a name="ref_DPP"><sup>3</sup></a></td>
+    <td> G. Di Battista, M. Patrignani, and M. Pizzonia,
+    <a href="http://www.ieee-infocom.org/2003/papers/04_04.PDF">
+    <span class="reftitle">Computing the Types of the Relationships between
+Autonomous
+    Systems</span></a>,
+    IEEE INFOCOM, 2003.
+</td>
+</tr>
+
+<tr>
+
+<td valign="top"><a name="ref_EHS"><sup>4</sup></a></td>
+    <td>T. Erlebach, A. Hall, and T. Schank,
+    <a href="ftp://ftp.tik.ee.ethz.ch/pub/publications/TIK-Report145.pdf">
+    <span class="reftitle">Classifying Customer-Provider Relationships in the
+Internet</span></a>,
+    Proceedings of the IASTED International Conference on
+    Communications and Computer Networks (CCN), 2002.
+</td>
+</tr>
+
+<tr>
+<td valign="top"><a name="ref_XG"><sup>5</sup></a></td>
+    <td>J. Xia and L. Gao,
+    <a href="http://rio.ecs.umass.edu/mnilpub/papers/jxia-globecom04.pdf">
+
+    <span class="reftitle">On the Evaluation of AS Relationship
+Inferences</span></a>,
+    IEEE Globecom, 2004.
+</td>
+</tr>
+
+<tr>
+<td valign="top"><a name="ref_DKH1"><sup>6</sup></a></td>
+    <td>X. Dimitropoulos, D. Krioukov, B. Huffaker, kc claffy, and G.
+Riley,
+    <a
+href="http://www.caida.org/publications/papers/2005/asrelationships/">
+    <span class="reftitle">Inferring AS Relationships: Dead End or Lively
+Beginning</span></a>,
+    International Workshop on Efficient and Experimental Algorithms (WEA),
+2005.
+</td>
+</tr>
+
+<tr>
+<td valign="top"><a name="ref_DKH2"><sup>7</sup></a></td>
+    <td>X. Dimitropoulos, D. Krioukov, M. Fomenkov, B. Huffaker, Y. Hyun,
+    kc claffy, and G. Riley,
+    <a href="http://www.caida.org/publications/papers/2006/as_relationships_inference/">
+    <span class="reftitle">AS Relationships: Inference and Validation</span></a>,
+    ACM SIGCOMM Computer Communication Review (CCR), v.37, n.1, pp.29-40,
+    2007.
+</td>
+</tr>
+<tr>
+<td valign="top"><a name="ref_BS"><sup>8</sup></a></td>
+    <td> B. Hummel and S. Kosub
+    <a href="http://www14.in.tum.de/software/BGP/hummel-kosub-07.html">
+    <span class="reftitle">Acyclic Type-of-Relationship Problems on the
+	Internet: An Experimental Analysis </span></a>,
+    In Proceedings of the 7th ACM SIGCOMM Internet Measurement Conference
+    (IMC'2007), pages 221-226. ACM Press, New York, NY, 2007.
+</td>
+</tr>
+<tr>
+<td valign="top"><a name="ref_ACV"><sup>9</sup></a></td>
+    <td>M. Luckie, B. Huffaker, k. claffy, A. Dhamdhere, and V. Giotsas,
+    <a href="http://www.caida.org/publications/papers/2013/asrank/">
+    <span class="reftitle">AS Relationships, Customer Cones, and Validation
+    </span></a>,
+    in Internet Measurement Conference (IMC), Oct 2013, pp. 243--256.
+</td>
+</tr>
+</table>
+{% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script>
+        citation_add_date();
+    </script>
+{% endblock %}

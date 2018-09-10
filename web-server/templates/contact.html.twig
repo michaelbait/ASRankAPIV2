@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}}: Contact {% endblock %}
+{% block description %} Lists contact information for feedback on AS Rank. {% endblock %}
+
+{% block body %} 
+    <div class="asrank-contact">
+        AS Rank related queries should be directed to <a href="mailto:asrank-feedback@caida.org"><b>asrank-feedback@caida.org</b></a>
+        <p/>
+        <p/>
+        For more general CAIDA contact information see <a href="https://www.caida.org/home/contactinfo/">
+            https://www.caida.org/home/contactinfo/</a>.
+    </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+<div class="asrank-asn-info-div">
+<table class="asrank-info-table table-condensed" border="0">
+    <tr><th>AS number</th><td colspan="7">{{asn_info.asn|raw}}</td></tr>
+    <tr><th>AS name</th><td colspan="7">{{asn_info.name|raw}}</td></tr>
+    <tr><th>organization</th><td colspan="7"><a href="{{path('org_members', {"org": asn_info.org.id})}}">{{asn_info.org.name|raw}}</a></td></tr>
+    <tr><th>country</th><td colspan="7">
+            {% if asn_info.country_name is defined %}
+                {{asn_info.country_name|raw}} 
+                <span class="flag-icon flag-icon-{{asn_info.country|raw|lower}}"></span>
+            {% else %}
+                <span class="asrank-unknown">unknown</span>
+            {% endif %}
+        </td></tr>
+    <tr><th>customer cone </th>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are observed to be in the selected ASN's customer cone."> 
+            {{asn_info.cone['asns']}}<br>
+            <span>asn</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of prefixes that are observed to be in the selected ASN's customer cone."> 
+            {{asn_info.cone['prefixes']}}<br>
+            <span>prefix</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of addresses that are observed to be in the selected ASN's customer cone."> 
+            {{asn_info.cone['addresses']}}<br>
+            <span>address</span>
+        </td>
+    </tr>
+    <tr><th>AS rank</th><td colspan="7">{{asn_info.rank|raw}}</td></tr>
+    <tr><th>AS degree</th>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that were observed as neighbors of the selected ASN in a path.">
+            {{asn_info.degree['globals']}}<br>
+            <span>global</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that where observed as neighbors of the selected ASN in a path, where the selected ASN was between, i.e. providing transit, for two other ASNs."> 
+            {{asn_info.degree['transits']}}<br>
+            <span>transit</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are providers of the selected ASN."> 
+            {{asn_info.degree['providers']}}<br>
+            <span>provider</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are peers of the selected ASN."> 
+            {{asn_info.degree['peers']}}<br>
+            <span>peer</span>
+        </td>
+        <td class="asrank-info-table-sub_facts" data-toggle="tooltip" data-placement="top" title="The number of ASNs that are customers of the selected ASN."> 
+            {{asn_info.degree['customers']}}<br>
+            <span>customer</span>
+        </td>
+    </tr>
+</table>
+</div>

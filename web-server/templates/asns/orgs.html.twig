@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}: A ranking of the largest Autonomous Systems (AS) in the Internet.{% endblock %}
+
+{% block body %} 
+    {%set name=""%} {% include 'asns/asn_search_form.html.twig' %}
+    <div id="orgs_table"> 
+    </div>
+{% endblock %}
+
+{% block datasources %} {% include 'data-sources.html.twig' %} {% endblock %}
+
+{% block javascripts %}
+    {{parent()}}
+    <script> 
+        build_info_table('{{"orgs"}}', '{{false}}',{{page}},{{page_size}},'{{sort_type}}', '{{sort_dir}}', '{{false}}');
+    </script>
+{% endblock %}
