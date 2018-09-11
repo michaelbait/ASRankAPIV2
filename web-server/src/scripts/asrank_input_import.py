@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'efanchik'
+__author__ = 'baitaluk'
 
 import sys
 import getopt
